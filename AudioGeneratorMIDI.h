@@ -47,7 +47,23 @@ class AudioGeneratorMIDI : public AudioGenerator
     virtual bool stop() override;
     virtual bool isRunning() override { return running; };
 
+	    enum { MAX_TONEGENS = 32,         /* max tone generators: tones we can play simultaneously */
+           MAX_TRACKS = 24
+         };         /* max number of MIDI tracks we will process */
+
+	    struct tonegen_status {         /* current status of a tone generator */
+      bool playing;                /* is it playing? */
+      char track;                   /* if so, which track is the note from? */
+      char note;                    /* what note is playing? */
+      char instrument;              /* what instrument? */
+    } tonegen[MAX_TONEGENS];
+	
+	       struct tonegen_status *tg;
+
+		 	bool playSingleNote(int notee, float vell) {if(isRunning()) {     tsf_note_on (g_tsf, tg->instrument, notee, vell); return true; } else return false;};
+
   private:
+
     int freq;
     tsf *g_tsf;
     struct tsf_stream buffer;
@@ -72,9 +88,6 @@ class AudioGeneratorMIDI : public AudioGenerator
       uint32_t track_size;
     };
 
-    enum { MAX_TONEGENS = 32,         /* max tone generators: tones we can play simultaneously */
-           MAX_TRACKS = 24
-         };         /* max number of MIDI tracks we will process */
 
     int hdrptr;
     unsigned long buflen;
@@ -91,12 +104,7 @@ class AudioGeneratorMIDI : public AudioGenerator
     int earliest_tracknum = 0;
     unsigned long earliest_time = 0;
 
-    struct tonegen_status {         /* current status of a tone generator */
-      bool playing;                /* is it playing? */
-      char track;                   /* if so, which track is the note from? */
-      char note;                    /* what note is playing? */
-      char instrument;              /* what instrument? */
-    } tonegen[MAX_TONEGENS];
+
 
     struct track_status {           /* current processing point of a MIDI track */
       int trkptr;                  /* ptr to the next note change */

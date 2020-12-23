@@ -373,7 +373,6 @@ int AudioGeneratorMIDI::PlayMIDI()
 
   do {                         /* while there are still track notes to process */
     static struct track_status *trk;
-    static struct tonegen_status *tg;
     static int tgnum;
     static int count_tracks;
     static unsigned long delta_time, delta_msec;
